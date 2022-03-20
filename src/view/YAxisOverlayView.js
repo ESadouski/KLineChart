@@ -26,10 +26,94 @@ export default class YAxisOverlayView extends View {
     this._paneId = paneId
   }
 
-  _draw () {
-    this._ctx.textBaseline = 'middle'
-    this._drawTag()
-    this._drawCrossHairLabel()
+  initialCoordinates = {
+    asksChart: {
+      x: 0,
+      y: () => (this._yAxis.convertToPixel(0))(),
+    },
+    bidsChart: {
+      x: 0,
+      y: 0,
+    },
+  }
+
+
+  _drawOrderChart(items, totalCount, chartType, styles) {
+    this._drawOrderLine(items, totalCount, chartType, styles);
+    this._drawOrdersArea(items, totalCount, chartType, styles);
+  }
+
+  _drawLine(orders, totalCount) {
+    let currentX = 0;
+
+    orders.forEach((order, index) => {
+      currentX += this._convertXToPixels(order.count, totalCount);
+
+      this._ctx.lineTo(currentX, this._yAxis.convertToPixel(order.price));
+      if (orders[index + 1]) {
+        this._ctx.lineTo(
+          currentX,
+          this._yAxis.convertToPixel(orders[index + 1].price),
+        );
+      }
+    });
+
+    return currentX;
+  }
+
+  _drawOrderLine(orders, totalCount, chartType, styles) {
+    this._ctx.beginPath();
+    this._ctx.strokeStyle = styles.lineColor;
+    this._ctx.lineWidth = 3;
+
+    let initialCoords = chartType === 'asks' ? this.initialCoordinates.asksChart : this.initialCoordinates.bidsChart;
+    this._ctx.moveTo(initialCoords.x, initialCoords.y);
+
+    this._ctx.lineTo(0, this._yAxis.convertToPixel(orders[0].price));
+    this._drawLine(orders, totalCount);
+
+    this._ctx.stroke();
+    this._ctx.closePath();
+  }
+
+  _drawOrdersArea(orders, totalCount, chartType, styles) {
+    this._ctx.beginPath();
+
+    let initialCoords = chartType === 'asks' ? this.initialCoordinates.asksChart : this.initialCoordinates.bidsChart;
+    this._ctx.moveTo(initialCoords.x, initialCoords.y);
+
+    this._ctx.lineTo(0, this._yAxis.convertToPixel(orders[0].price));
+
+    const currentX = this._drawLine(orders, totalCount);
+
+    this._ctx.lineTo(currentX, chartType === 'asks' ? this._yAxis.convertToPixel(0) : 0);
+    this._ctx.closePath();
+
+    var my_gradient = this._ctx.createLinearGradient(500, 0, 0, 0);
+    my_gradient.addColorStop(0, styles.colorRight);
+    my_gradient.addColorStop(1, styles.colorLeft);
+    this._ctx.fillStyle = my_gradient;
+
+    this._ctx.fill();
+  }
+
+  _convertXToPixels(x, totalCount) {
+    let fullWidth = this._yAxis.width();
+    return (fullWidth / totalCount) * x;
+  }
+
+  _draw() {
+    const asksBidsData = this._chartStore.getAsksBidsData();
+
+    if (asksBidsData.asks && asksBidsData.bids) {
+      const styles = this._chartStore.styleOptions().yAxis;
+      this._drawOrderChart(asksBidsData.asks.items, asksBidsData.asks.totalCount, 'asks', styles.asksChart)
+      this._drawOrderChart(asksBidsData.bids.items, asksBidsData.bids.totalCount, 'bids', styles.bidsChart)
+    }
+
+    this._ctx.textBaseline = 'middle';
+    this._drawTag();
+    this._drawCrossHairLabel();
   }
 
   /**

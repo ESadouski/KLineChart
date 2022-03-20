@@ -388,6 +388,18 @@ const defaultYAxis = {
     size: 1,
     length: 3,
     color: '#DDDDDD'
+  },
+  asksChart: {
+    colorLeft: '#232c38',
+    colorRight: 'rgba(38, 166, 154, .65)',
+    lineColor: 'rgba(38, 166, 154, .65)',
+    lineWidth: 3,
+  },
+  bidsChart: {
+    colorLeft: '#232c38',
+    colorRight: 'rgba(239, 83, 80, .65)',
+    lineColor: 'rgba(239, 83, 80, .65)',
+    lineWidth: 3,
   }
 }
 

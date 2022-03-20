@@ -22,8 +22,8 @@ export default class Widget {
     this._width = 0
     this._height = 0
     this._initElement(props.container)
-    this._mainView = this._createMainView(this._element, props)
     this._overlayView = this._createOverlayView(this._element, props)
+    this._mainView = this._createMainView(this._element, props)
     this._htmlBaseId = 0
     this._htmls = new Map()
   }

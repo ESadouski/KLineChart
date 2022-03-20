@@ -197,6 +197,11 @@ export default class Chart {
     )
   }
 
+  applyAsksBidsData (data) {
+    const chartStore = this._chartPane.chartStore()
+    chartStore.addAsksBidsData(data)
+  }
+
   /**
    * 添加历史更多数据
    * @param dataList k线数据数组

@@ -38,6 +38,9 @@ export default class ChartStore {
 
     // 数据源
     this._dataList = []
+
+    this._asksBidsData = {}
+
     // 可见的数据(需要绘制的数据)
     this._visibleDataList = []
 
@@ -131,6 +134,10 @@ export default class ChartStore {
     return this._dataList
   }
 
+  getAsksBidsData () {
+    return this._asksBidsData
+  }
+
   /**
    * 获取可见数据源
    * @returns {[]|*[]}
@@ -174,12 +181,17 @@ export default class ChartStore {
     }
   }
 
+  addAsksBidsData (data) {
+    this._asksBidsData = data;
+  }
+
   /**
    * 清空数据源
    */
   clearDataList () {
     this._dataList = []
     this._visibleDataList = []
+    this._asksBidsData = {}
     this._timeScaleStore.clear()
   }
 
